@@ -1,109 +1,128 @@
-var displayDebug = true; //TODO: turn off for production!
+/******************************************
+ *    Base functions for use in code      *
+ ******************************************/
 
+var displayDebug = true; //TODO: turn off for production!
 function debug(msg) {
- if(!displayDebug){ return }
- if(window.console){ window.console.log(msg) }
- // else { alert(msg) }
+  if(!displayDebug){return}
+  if(window.console){window.console.log(msg)}
+  //else { alert(msg) }
 }
 
+//dumpProps uses 'debug' method
+function dumpProps(obj, parent) {
+  // Go through all the properties of the passed-in object
+  for (var i in obj) {
+    // if a parent (2nd parameter) was passed in, then use that to
+    // build the message. Message includes i (the object's property name)
+    // then the object's property value on a new line
+    if (parent) {var msg = parent + "." + i + "\n" + obj[i];} else {var msg = i + "\n" + obj[i];}
+    // Display the message. If the user clicks "OK", then continue. If they
+    // click "CANCEL" then quit this level of recursion
+    if (!debug(msg)) {return;}
+    // If this property (i) is an object, then recursively process the object
+    if (typeof obj[i] == "object") {
+      if (parent) {dumpProps(obj[i], parent + "." + i);} else {dumpProps(obj[i], i);}
+    }
+  }
+}
+
+
+/******************************************
+ *                                        *
+ *   Map API using Google Maps Geocoder   *
+ *                                        *
+ ******************************************/
 var geocoder;
 var map;
+var latlng = new google.maps.LatLng(-43.53262,172.63504); // IF no address in form, it starts here (City: Christchurch, Country: New Zealand).
+var myOptions = {
+  center: latlng,
+  mapTypeId: google.maps.MapTypeId.ROADMAP,
+  zoom: 11,
+  disableDefaultUI: true,
+  keyboardShortcuts: false,
+  disableDoubleClickZoom: true,
+  navigationControl: false,
+  scaleControl: false,
+  scrollwheel: false,
+  draggable: false
+}
+
 function map_initialize() {
- geocoder = new google.maps.Geocoder();
- var latlng = new google.maps.LatLng(-34.397, 150.644); // IF not address for the person, it starts here.
- var myOptions = {
- center: latlng,
- mapTypeId: google.maps.MapTypeId.ROADMAP,
- zoom: 16,
- disableDefaultUI: true,
- keyboardShortcuts: false,
- disableDoubleClickZoom: true,
- navigationControl: false,
- scaleControl: false,
- scrollwheel: true,
- draggable: false
- }
- map_perm = new google.maps.Map(document.getElementById("map_perm_address"), myOptions);
- codeAddress('address',map_perm); //householdPermanentAddress
- map_mail = new google.maps.Map(document.getElementById("map_mail_address"), myOptions);
- codeAddress('mailing_address',map_mail);
-// map_away = new google.maps.Map(document.getElementById("map_away_address"), myOptions);
-// codeAddress('away_address',map_away);
+  geocoder = new google.maps.Geocoder();
+  map_perm = new google.maps.Map(document.getElementById("map_perm_address"), myOptions);
+  codeAddress('address',map_perm,true); // Permanent Address
+  map_mail = new google.maps.Map(document.getElementById("map_mail_address"), myOptions);
+  codeAddress('mailing_address',map_mail,true);
+  map_away = new google.maps.Map(document.getElementById("map_away_address"), myOptions);
+  codeAddress('away_address',map_away,true);
 }
 
-function codeAddress(addressSource, mapName) {
- var address = buildAddress(addressSource);
- debug("addressSource: " + addressSource );
+function codeAddress(addressSource, mapName, init) {
+  if(!init) {init=false;}
+  var address = concatAddress(addressSource);
+  debug("addressSource: " + addressSource );
+  if(!init) { var check = checkAddress(address); }
 
- if (geocoder) {
- debug("--->geocoder starts.");
- geocoder.geocode( {
- 'address': address
- }, function(results, status) {
- debug("--->geocode function");
- if (status == google.maps.GeocoderStatus.OK) {
- debug("--->GeocoderStatus OK");
- mapName.setCenter(results[0].geometry.location);
- var marker = new google.maps.Marker({
- map: mapName,
- title: 'Home Address',
- //shape: (coords=[60,50,10,15], type='rect'),
- position: results[0].geometry.location
- });
- debug("--->marker done");
- debug("--->marker results:" + results[0]);
- } else {
- alert("Geocode was not successful for the following reason: " + status);
- }
- });
- }
+  if (geocoder) {
+    geocoder.geocode( {
+      'address': address
+    }, function(results, status) {
+      debug("---->geocode function starts");              //debug
+      if (status == google.maps.GeocoderStatus.OK) {
+        debug("-->GeocoderStatus OK");
+        mapName.setCenter(results[0].geometry.location);
+        var marker = new google.maps.Marker({
+          map: mapName,
+          title: 'Home Address',
+          //shape: (coords=[60,50,10,15], type='rect'),
+          position: results[0].geometry.location
+        });
+        debug("-->marker results:");                      //debug
+        debug(results);                                   //debug
+      } else {
+        debug("Geocode was not successful with "+ addressSource +" for the following status reason: " + status); //TODO: remove from debug, send message to end user.
+        //        alert("Geocode was not successful with "+ addressSource +" for the following status reason: " + status);
+      }
+    });
+  }
 }
 
-function buildAddress(addressName) {
- if(addressName) {
- addr = addressName;
- } else {
- addr = "unk";
- }
-// form_field_name = address + '[' + addr_fields[i] + ']';
-// document.getElementsByName(form_field_name)[0].value + ", "
-// debug(addr+"[street]");
-
-// var addr_str = document.getElementsByName(addr+"[street]")[0].value + ", "
-// + document.getElementsByName(addr+"[city]")[0].value + ", "
-// + document.getElementsByName(addr+"[state]")[0].value + ", "
-// + document.getElementsByName(addr+"[zip]")[0].value ;
-
- var addr_str = document.getElementsByName("address[street]")[0].value + ", "
- + document.getElementsByName("address[city]")[0].value + ", "
- + document.getElementsByName("address[state]")[0].value + ", "
- + document.getElementsByName("address[zip]")[0].value ;
-// debug(addr_str);
- return addr_str;
+function checkAddress(addressSource) {
+  // ToDo: function to check if address is verifiable or if multiple are found
+  geocoder.geocode( {
+    'address': addressSource
+  }, function(results, status) {
+    debug("---->checkAddress function starts");              //debug
+    if (status == google.maps.GeocoderStatus.OK) {
+      debug("-->GeocoderStatus OK");
+      if (results.length>1) {
+        //alert("We found more than one address with your '"+ addressSource +"', please be more specific.");
+        debug("-->checkAddress found multiples:");
+        debug(results);
+        return 2; //multiple
+      }
+    } else {
+      //alert("We had trouble finding your '"+ addressSource +"'.");
+      return 0; //error
+    }
+  })
+  return 1; //success
 }
 
-/*
-The types[] array within the returned result indicates the address type. These types may also be returned within address_components[] arrays to indicate the type of the particular address component. Addresses within the geocoder may have multiple types; the types may be considered "tags". For example, many cities are tagged with the political and locality type.
-The following types are supported and returned by the HTTP Geocoder:
-street_address indicates a precise street address.
-political indicates a political entity. Usually, this type indicates a polygon of some civil administration.
-country indicates the national political entity, and is typically the highest order type returned by the Geocoder.
-administrative_area_level_1 indicates a first-order civil entity below the country level. Within the United States, these administrative levels are states. Not all nations exhibit these administrative levels.
-administrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels.
-administrative_area_level_3 indicates a third-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
-colloquial_area indicates a commonly-used alternative name for the entity.
-locality indicates an incorporated city or town political entity.
-sublocality indicates an first-order civil entity below a locality
-neighborhood indicates a named neighborhood
-premise indicates a named location, usually a building or collection of buildings with a common name
-subpremise indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name
-postal_code indicates a postal code as used to address postal mail within the country.
-natural_feature indicates a prominent natural feature.
-airport indicates an airport.
-park indicates a named park.
-In addition to the above, address components may exhibit the following types:
-post_box indicates a specific postal box.
-street_number indicates the precise street number.
-floor indicates the floor of a building address.
-room indicates the room of a building address.
- */
+function concatAddress(addressName) {
+  if(addressName) {
+    addr = addressName;
+  } else {
+    addr = "unk";
+    debug("Address source 'unknown' in concatenate address function.");
+  }
+  var addr_str = document.getElementsByName(addr+"[street]")[0].value + ", "
+    + document.getElementsByName(addr+"[city]")[0].value + ", "
+    + document.getElementsByName(addr+"[state]")[0].value + ", "
+    + document.getElementsByName(addr+"[zip]")[0].value ;
+  debug(addr_str);
+  return addr_str;
+}
+
