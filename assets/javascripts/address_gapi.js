@@ -35,11 +35,12 @@ function dumpProps(obj, parent) {
  ******************************************/
 var geocoder;
 var map;
-var latlng = new google.maps.LatLng(-43.53262,172.63504); // IF no address in form, it starts here (City: Christchurch, Country: New Zealand).
+//var latlng = new google.maps.LatLng(-43.53262,172.63504); // IF no address in form, it starts here (City: Christchurch, Country: New Zealand).
+var latlng = new google.maps.LatLng(0,0); // IF no address in form, it starts here (mid-ocean blue).
 var myOptions = {
   center: latlng,
   mapTypeId: google.maps.MapTypeId.ROADMAP,
-  zoom: 11,
+  zoom: 15,
   disableDefaultUI: true,
   keyboardShortcuts: false,
   disableDoubleClickZoom: true,
@@ -69,15 +70,17 @@ function codeAddress(addressSource, mapName, init) {
     geocoder.geocode( {
       'address': address
     }, function(results, status) {
-      debug("---->geocode function starts");              //debug
+      debug("---->geocode function starts for: " +addressSource);              //debug
       if (status == google.maps.GeocoderStatus.OK) {
         debug("-->GeocoderStatus OK");
         mapName.setCenter(results[0].geometry.location);
         var marker = new google.maps.Marker({
           map: mapName,
-          title: 'Home Address',
+          title: 'Click to open map of this address.',
           //shape: (coords=[60,50,10,15], type='rect'),
-          position: results[0].geometry.location
+          position: results[0].geometry.location,
+          icon: '/javascripts/going_postal/home_icon_small.png',
+          clickable: true
         });
         debug("-->marker results:");                      //debug
         debug(results);                                   //debug
