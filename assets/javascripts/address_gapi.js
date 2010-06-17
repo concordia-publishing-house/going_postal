@@ -50,19 +50,22 @@ var myOptions = {
   draggable: false
 }
 
-function map_initialize() {
-  geocoder = new google.maps.Geocoder();
-  map_perm = new google.maps.Map(document.getElementById("map_perm_address"), myOptions);
-  codeAddress('address',map_perm,true); // Permanent Address
-  map_mail = new google.maps.Map(document.getElementById("map_mail_address"), myOptions);
-  codeAddress('mailing_address',map_mail,true);
-  map_away = new google.maps.Map(document.getElementById("map_away_address"), myOptions);
-  codeAddress('away_address',map_away,true);
+function map_initialize(mapType) {
+  if (mapType) { geocoder = new google.maps.Geocoder(); }
+  if (mapType == 'map_perm_address'){ // Permanent Address
+    map_perm = new google.maps.Map(document.getElementById("map_perm_address"), myOptions);
+  } else if (mapType == 'map_mail_address') { // Mailing Address
+    map_mail = new google.maps.Map(document.getElementById("map_mail_address"), myOptions);
+  } else if (mapType == 'map_away_address') { // Away Address
+    map_away = new google.maps.Map(document.getElementById("map_away_address"), myOptions);
+    mapAddress('away_address',map_away,true);
+  }
 }
 
-function codeAddress(addressSource, mapName, init) {
+function mapAddress(addressSource, mapName, init) {
   if(!init) {init=false;}
-  var address = concatAddress(addressSource);
+  if (addressSource) {address = concatAddress(addressSource);}
+  else {address = 'unknown';}
   debug("addressSource: " + addressSource );
   if(!init) { var check = checkAddress(address); }
 
@@ -72,18 +75,16 @@ function codeAddress(addressSource, mapName, init) {
     }, function(results, status) {
       debug("---->geocode function starts for: " +addressSource);              //debug
       if (status == google.maps.GeocoderStatus.OK) {
-        debug("-->GeocoderStatus OK");
+        debug("-->Geocode Status OK");
         mapName.setCenter(results[0].geometry.location);
         var marker = new google.maps.Marker({
           map: mapName,
           title: 'Click to open map of this address.',
-          //shape: (coords=[60,50,10,15], type='rect'),
+           //shape: (coords=[60,50,10,15], type='rect'),
           position: results[0].geometry.location,
           icon: '/javascripts/going_postal/home_icon_small.png',
           clickable: true
         });
-        debug("-->marker results:");                      //debug
-        debug(results);                                   //debug
       } else {
         debug("Geocode was not successful with "+ addressSource +" for the following status reason: " + status); //TODO: remove from debug, send message to end user.
         //        alert("Geocode was not successful with "+ addressSource +" for the following status reason: " + status);
@@ -97,21 +98,25 @@ function checkAddress(addressSource) {
   geocoder.geocode( {
     'address': addressSource
   }, function(results, status) {
-    debug("---->checkAddress function starts");              //debug
+    debug("---->checkAddress function starts: "+addressSource);              //debug
     if (status == google.maps.GeocoderStatus.OK) {
       debug("-->GeocoderStatus OK");
-      if (results.length>1) {
-        //alert("We found more than one address with your '"+ addressSource +"', please be more specific.");
-        debug("-->checkAddress found multiples:");
+      if (results.length > 1) {
+        alert("We found more than one address with your '"+ addressSource +"', please be more specific.");
+        debug("-->checkAddress found multiple addresses:");
         debug(results);
         return 2; //multiple
       }
-    } else {
+    } else if (results.length = 1) {  
+        debug("-->success, one address found");                      //debug
+        return 1; //success, one address found
+    } else  {
+        debug("-->status not ok, no address found");                      //debug
       //alert("We had trouble finding your '"+ addressSource +"'.");
       return 0; //error
     }
   })
-  return 1; //success
+  return 1; //success, one address found
 }
 
 function concatAddress(addressName) {
@@ -120,6 +125,7 @@ function concatAddress(addressName) {
   } else {
     addr = "unk";
     debug("Address source 'unknown' in concatenate address function.");
+    return;
   }
   var addr_str = document.getElementsByName(addr+"[street]")[0].value + ", "
     + document.getElementsByName(addr+"[city]")[0].value + ", "
