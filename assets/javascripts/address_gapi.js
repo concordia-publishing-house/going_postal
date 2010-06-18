@@ -35,8 +35,8 @@ function dumpProps(obj, parent) {
  ******************************************/
 var geocoder;
 var map;
-//var latlng = new google.maps.LatLng(-43.53262,172.63504); // IF no address in form, it starts here (City: Christchurch, Country: New Zealand).
-var latlng = new google.maps.LatLng(0,0); // IF no address in form, it starts here (mid-ocean blue).
+var latlng = new google.maps.LatLng(-43.53262,172.63504); // IF no address in form, it starts here (City: Christchurch, Country: New Zealand).
+// var latlng = new google.maps.LatLng(0,0); // IF no address in form, it starts here (mid-ocean blue).
 var myOptions = {
   center: latlng,
   mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -47,26 +47,32 @@ var myOptions = {
   navigationControl: false,
   scaleControl: false,
   scrollwheel: false,
-  draggable: false
+  draggable: true 
 }
 
-function map_initialize(mapType) {
-  if (mapType) { geocoder = new google.maps.Geocoder(); }
-  if (mapType == 'map_perm_address'){ // Permanent Address
-    map_perm = new google.maps.Map(document.getElementById("map_perm_address"), myOptions);
-  } else if (mapType == 'map_mail_address') { // Mailing Address
-    map_mail = new google.maps.Map(document.getElementById("map_mail_address"), myOptions);
-  } else if (mapType == 'map_away_address') { // Away Address
-    map_away = new google.maps.Map(document.getElementById("map_away_address"), myOptions);
-    mapAddress('away_address',map_away,true);
+function map_initialize(mapTypeID) {
+  if (mapTypeID) { 
+    geocoder = new google.maps.Geocoder(); 
+    switch(mapTypeID) {
+      case 'map_perm':
+        map_perm = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions);
+        break;
+      case 'map_mail':
+        map_mail = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions);
+        break;
+      case 'map_away':
+        map_away = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions);
+        break;
+    }
+  } else {
+    debug("!No mapTypeID passed as argument to map_initialize!")
   }
 }
 
 function mapAddress(addressSource, mapName, init) {
   if(!init) {init=false;}
-  if (addressSource) {address = concatAddress(addressSource);}
-  else {address = 'unknown';}
-  debug("addressSource: " + addressSource );
+  addressSource ? address = concatAddress(addressSource) : address = 'unknown';
+  debug("mapAddressSource: " + addressSource );
   if(!init) { var check = checkAddress(address); }
 
   if (geocoder) {
@@ -121,17 +127,14 @@ function checkAddress(addressSource) {
 
 function concatAddress(addressName) {
   if(addressName) {
-    addr = addressName;
+    var addr_str = document.getElementsByName(addressName+"[street]")[0].value + ", "
+                 + document.getElementsByName(addressName+"[city]")[0].value + ", "
+                 + document.getElementsByName(addressName+"[state]")[0].value + ", "
+                 + document.getElementsByName(addressName+"[zip]")[0].value ;
+    debug(addr_str);
   } else {
-    addr = "unk";
-    debug("Address source 'unknown' in concatenate address function.");
-    return;
+    addr_str("Address source 'unknown' in concatenate address function.");
   }
-  var addr_str = document.getElementsByName(addr+"[street]")[0].value + ", "
-    + document.getElementsByName(addr+"[city]")[0].value + ", "
-    + document.getElementsByName(addr+"[state]")[0].value + ", "
-    + document.getElementsByName(addr+"[zip]")[0].value ;
-  debug(addr_str);
   return addr_str;
 }
 
