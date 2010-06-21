@@ -98,7 +98,7 @@ function mapAddress(addressSource, mapName, init) {
         });
       } else {
         debug("Geocode was not successful with "+ addressSource +" for the following status reason: " + status); 
-        displayProps(mapName.c.id);
+        //displayProps(mapName.c.id);
         document.getElementById(mapName.c.id).style.display="none";
       }
     });
