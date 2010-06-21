@@ -65,9 +65,12 @@ function map_initialize(mapTypeID) {
     geocoder = new google.maps.Geocoder(); 
     // mapTypeID = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); //Create map object using a variable's contents as name of object gives "not defined"
     switch(mapTypeID) {
-      case 'map_perm': map_perm = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
-      case 'map_mail': map_mail = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
-      case 'map_away': map_away = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
+      case 'map_perm': map_perm = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('address',map_perm,true); break;
+      case 'map_mail': map_mail = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('mail_address',map_mail,true); break;
+      case 'map_away': map_away = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('away_address',map_away,true); break;
     }
   } else {
     debug("!No map ID passed as argument to map_initialize!")
