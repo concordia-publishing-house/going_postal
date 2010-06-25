@@ -65,51 +65,60 @@ function map_initialize(mapTypeID) {
     geocoder = new google.maps.Geocoder(); 
     // mapTypeID = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); //Create map object using a variable's contents as name of object gives "not defined"
     switch(mapTypeID) {
-      case 'map_perm': map_perm = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
-      case 'map_mail': map_mail = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
-      case 'map_away': map_away = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); break;
+      case 'map_perm': map_perm = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('address',map_perm,true); break;
+      case 'map_mail': map_mail = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('mail_address',map_mail,true); break;
+      case 'map_away': map_away = new google.maps.Map(document.getElementById(mapTypeID+'_address'), myOptions); 
+                       mapAddress('away_address',map_away,true); break;
     }
   } else {
     debug("!No map ID passed as argument to map_initialize!")
   }
 }
 
-function mapAddress(addressSource, mapName, init) {
-  addressSource ? address = concatAddress(addressSource) : address = 'unknown';
-  if (geocoder) {
-    geocoder.geocode( {
-      'address': address
-    }, function(results, status) {
-      debug("---->geocode function starts for: " +addressSource);              //debug
-      if (status == google.maps.GeocoderStatus.OK) {
-        debug("-->Geocode Status OK");
-        mapName.setCenter(results[0].geometry.location);
-        var marker = new google.maps.Marker({
-          map: mapName,
-          title: 'Click to open map of this address.',
-           //shape: (coords=[60,50,10,15], type='rect'),
-          position: mapName.center,
-          icon: '/javascripts/going_postal/home_icon_small.png',
-          clickable: true
-        });
-        var infowindow = infoAddress(mapName);
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.open(mapName,marker);
-        });
-      } else {
-        debug("Geocode was not successful with "+ addressSource +" for the following status reason: " + status); 
-        displayProps(mapName.c.id);
-        document.getElementById(mapName.c.id).style.display="none";
-      }
-    });
-  }
+function mapAddress(addressSource, mapName, init){
+    addressSource ? address = concatAddress(addressSource) : address = 'unknown';
+    if (geocoder){
+        // if (init == true){
+            geocoder.geocode({
+                'address': address
+            },
+            function(results, status){
+                debug("->geocode mapping function starts for: " + addressSource);
+                if (status == google.maps.GeocoderStatus.OK && results.length==1){
+                    debug("-->Geocode Status OK");
+                    mapName.setCenter(results[0].geometry.location);
+                    var marker = new google.maps.Marker({
+                        map: mapName,
+                        position: mapName.center,
+                        clickable: true,
+                        title: 'Click to open map of this address.',
+                        icon: '/javascripts/going_postal/home_icon_small.png'
+                    });
+                    var infowindow = infoAddress(mapName);
+                    google.maps.event.addListener(marker, 'click',
+                    function(){
+                        infowindow.open(mapName, marker);
+                    });
+                }
+                else{
+                    debug("-->Geocode was not successful with " + addressSource + " for the following status reason: " + status);
+                    //displayProps(mapName.c.id);
+                    // document.getElementById(mapName.c.id).style.height = 'auto';
+                    // document.getElementById(mapName.c.id).innerHTML = "Mapping was not successful with this " + addressSource + " for the following reason: " + status;
+                    document.getElementById(mapName.c.id).style.display = "none";
+                }
+            });
+        }
+    // } //(init-test)
 }
 
 function infoAddress(mapName) {
   var infoVar = new google.maps.InfoWindow({ 
-    content: "<a href='http://maps.google.com/maps?q="+mapName.center+"' target='_blank'>Click to open large<br/>map of this address.</a>",
+    content: "<a href='http://maps.google.com/maps?q="+mapName.center+"' target='_blank'>Click to open large<br/>map of this area.</a>",
     position: mapName.center,
-    maxWidth: 50,
+    maxWidth: 20,
     size: new google.maps.Size(50,50)
   });
   return infoVar;
@@ -142,15 +151,15 @@ function checkAddress(addressSource) {
 }
 
 function concatAddress(addressName) {
-  if(addressName) {
+  // if() {
     var addr_str = document.getElementsByName(addressName+"[street]")[0].value + ", "
                  + document.getElementsByName(addressName+"[city]")[0].value + ", "
                  + document.getElementsByName(addressName+"[state]")[0].value + ", "
                  + document.getElementsByName(addressName+"[zip]")[0].value ;
-    debug(addr_str);
-  } else {
-    addr_str("Address source 'unknown' in concatenate address function.");
-  }
+    debug("Address: "+addr_str);
+  // } else {
+  //   addr_str("Address source 'unknown' in concatenate address function.");
+  // }
   return addr_str;
 }
 
