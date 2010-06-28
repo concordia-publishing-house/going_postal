@@ -1,6 +1,6 @@
-require 'composite/base'
+require 'active_model'
 
-class Address < Composite::Base
+class Address < ActiveModel::Base
   include HashAccessors
   attr_reader :hash
   hash_readers_for :hash, [:street, :city, :state, :zip]
