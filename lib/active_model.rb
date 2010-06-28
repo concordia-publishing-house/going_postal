@@ -6,7 +6,7 @@ module ActiveModel
       @hash = Hash.new
     end
     
-    delegate :clear, :empty?, :to => :@hash
+    delegate :clear, :to => :@hash
 
     def [](attribute)
       if errors = @hash[attribute.to_sym]
@@ -28,6 +28,15 @@ module ActiveModel
 
     def size
       @hash.values.flatten.size
+    end
+    alias :count :size
+    
+    def empty?
+      self.size.zero?
+    end
+    
+    def any?
+      !self.empty?
     end
 
     def to_a
