@@ -2,7 +2,8 @@ module ActiveModel
   
   class Errors
     
-    def initialize
+    def initialize(base)
+      @base = base
       @hash = Hash.new
     end
     
@@ -21,8 +22,8 @@ module ActiveModel
     end
 
     def each
-      @hash.each_key do |attribute| 
-        self[attribute].each { |error| yield attribute, error }
+      @hash.each_key do |attribute|
+        @hash[attribute].each { |error| yield attribute, error }
       end
     end
 
@@ -105,7 +106,7 @@ module ActiveModel
     attr_reader :errors
 
     def initialize
-      @errors = ActiveModel::Errors.new
+      @errors = ActiveModel::Errors.new(self)
       super
     end
 

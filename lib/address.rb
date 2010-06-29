@@ -1,4 +1,5 @@
 require 'active_model'
+require 'hash_accessors'
 
 class Address < ActiveModel::Base
   include HashAccessors
