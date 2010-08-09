@@ -147,7 +147,9 @@ class Address < ActiveModel::Base
   end
 
   def to_s
-    if (street and (street.length>0))
+    if street.blank?
+      ""
+    else
       "#{street}\n#{city}, #{state}  #{zip}"
     end
   end
