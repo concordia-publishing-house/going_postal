@@ -55,6 +55,7 @@ class Address < ActiveModel::Base
     [ "Vermont", "VT" ],
     [ "Virginia", "VA" ],
     [ "Washington", "WA" ],
+    [ "Washington D.C.", "DC" ],
     [ "West Virginia", "WV" ],
     [ "Wisconsin", "WI" ],
     [ "Wyoming", "WY" ]
@@ -68,6 +69,7 @@ class Address < ActiveModel::Base
     [ "CA" ],
     [ "CO" ],
     [ "CT" ],
+    [ "DC" ],
     [ "DE" ],
     [ "FL" ],
     [ "GA" ],
