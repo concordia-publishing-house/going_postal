@@ -156,12 +156,18 @@ class Address < ActiveModel::Base
     end
   end
   
+  def as_json(options={})
+    to_html
+  end
+  
   def to_html
     # todo 'h' is not recognized; but add html cleaning here
-    html = "#{street}"
-    html << "<br/>" if(street and (street.length>0))
-    html << "#{city}, #{state} #{zip}" if(city and (city.length>0))
-    html
+    # address.blank? ? "" : h(address).gsub(/ /, "&nbsp;").gsub(/\n/, "<br />")
+    to_s.gsub(/ /, "&nbsp;").gsub(/\n/, "<br />")
+    # html = "#{street}"
+    # html << "<br/>" if(street and (street.length>0))
+    # html << "#{city}, #{state}&nbsp;&nbsp;#{zip}" if(city and (city.length>0))
+    # html
   end
   
   def self.loader(address_as_string)
