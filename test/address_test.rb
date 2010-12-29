@@ -3,7 +3,7 @@ require "test_helper"
 class AddressTest < ActiveSupport::TestCase
   
   def test_address_to_yaml
-    a = Address.new(HashWithIndifferentAccess.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'}))
+    a = Address.new({'street' => '555 Main', 'city' => 'Average', 'state' => 'MO', 'zip' => '55555'})
     b = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
     assert_equal a.to_yaml, b.to_yaml
     
@@ -12,11 +12,27 @@ class AddressTest < ActiveSupport::TestCase
     assert_equal a.to_yaml, b.to_yaml
   end
   
-  def test_address_symbolize_keys
-    hash = {"test" => "1"}
-    answer = {:test => "1"}
-    a = Address.new
-    assert_equal answer, a.symbolize_keys(hash)
+  def test_valid_address
+    address = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
+    assert address.valid?
+  end
+  
+  def test_invalid_addresses
+    address = Address.new
+    assert_equal true, address.blank?
+    assert_equal false, address.valid?
+    
+    address = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '5555'})
+    assert !address.valid?
+    assert address.errors[:zip].any?
+    
+    address = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555-12'})
+    assert !address.valid?
+    assert address.errors[:zip].any?
+    
+    address = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '5555F'})
+    assert !address.valid?
+    assert address.errors[:zip].any?
   end
   
   def test_address_comparison
