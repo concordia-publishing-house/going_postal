@@ -1,5 +1,7 @@
 require 'rubygems'
+require 'active_model'
+require 'active_support'
+require 'active_support/core_ext'
 require 'active_support/test_case'
-require 'test/unit'
 require 'redgreen'
 require 'address'

@@ -1,9 +1,8 @@
+require 'active_model'
+require 'active_model/validations'
 require 'active_support'
 require 'active_support/core_ext'
 require 'hash_accessors'
-require 'active_model'
-require 'active_model/validations'
-
 
 class Address
   include ActiveModel::Validations
@@ -12,14 +11,19 @@ class Address
   hash_readers_for :hash, [:street, :city, :state, :zip]
   
   
+  validates :street, :presence => true
+  validates :city, :presence => true
+  validates :state, :presence => true
+  validates :zip, :presence => true, :format => {:with => /\A\d{5}(-\d{4})?\Z/, :message => "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em>)."}
   
-  validates_presence_of :city, :state, :street, :zip
-  validates_format_of :zip, :with => /\A\d{5}(-\d{4})?\Z/, :message => "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em>)."
   
+  
+  # !nb: c.f. http://boblail.tumblr.com/post/2528265548/using-validates-associated-with-composed-of-and
+  def validation_context=(value); end
   
   
   def initialize(hash=nil)
-    super()
+    errors # !nb: c.f. http://boblail.tumblr.com/post/2528265548/using-validates-associated-with-composed-of-and
     @hash = hash.is_a?(Hash) ? hash.symbolize_keys : {}
     @hash.reverse_merge!(
       :street => "",
@@ -99,6 +103,7 @@ class Address
   
   
   # !todo: move to module
+  # c.f. http://blog.nicolasblanco.fr/2010/09/29/quick-and-simple-geocoding/
   def verify_address(address_info)
     raise "API key not specified.\nCall AddressStandardization::GoogleMaps.api_key = '...' before you call .standardize()." unless GoogleMaps.api_key
     
