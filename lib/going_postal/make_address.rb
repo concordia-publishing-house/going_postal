@@ -17,7 +17,6 @@ module GoingPostal
       parts.each do |part_id|
         mapping = [part_id, :to_yaml]
         mapping = [mapping, ["#{part_id}_latitude".to_sym, :latitude], ["#{part_id}_longitude".to_sym, :longitude]] if geocode
-        Rails.logger.info "[going_postal] mapping: #{mapping.inspect}"
         composed_of part_id,
           :class_name => "GoingPostal::Address",
           :allow_nil => true,

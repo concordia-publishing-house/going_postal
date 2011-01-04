@@ -38,6 +38,7 @@ module GoingPostal
     def attributes=(hash)
       hash = hash.symbolize_keys.reverse_merge(self.class.empty)
       @street, @city, @state, @zip = hash[:street], hash[:city], hash[:state], hash[:zip]
+      @latitude, @longitude = hash[:latitude], hash[:longitude]
     end
     
     
