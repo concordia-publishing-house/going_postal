@@ -1,9 +1,15 @@
-require 'going_postal/address/google_api'
+require 'going_postal/api/google'
+require 'going_postal/api/usps'
 
 
 module GoingPostal
   class Address
     module Verification
+      
+      
+      
+      @api = :google
+      mattr_accessor :api
       
       
       
@@ -14,7 +20,7 @@ module GoingPostal
       
       def suggest_valid_address!
         Rails.logger.info "[going_postal] verifying '#{self.to_s}'" if defined?(Rails)
-        response = GoogleApi.find_address(self).first
+        response = api.find_address(self).first
         if response
           Address.new({
             :street => "#{response.get_address_component(:street_number)} #{response.get_address_component(:route)}",
@@ -24,6 +30,19 @@ module GoingPostal
           })
         else
           Address.empty
+        end
+      end
+      
+      
+      
+    private
+      
+      
+      
+      def api
+        case ::GoingPostal::Address::Verification.api
+        when :usps; Api::Usps
+        else        Api::Google
         end
       end
       

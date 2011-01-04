@@ -1,4 +1,4 @@
-require 'going_postal/address/google_api'
+require 'going_postal/api/google'
 
 
 module GoingPostal
@@ -18,7 +18,7 @@ module GoingPostal
       
       def geocode!
         Rails.logger.info "[going_postal] geocoding '#{self.to_s}'" if defined?(Rails)
-        response = GoogleApi.find_address(self).first
+        response = Api::Google.find_address(self).first
         if response
           @latitude = response.latitude
           @longitude = response.longitude

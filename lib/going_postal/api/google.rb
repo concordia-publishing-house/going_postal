@@ -3,7 +3,7 @@ require 'rack'
 
 
 # ===============================================================================
-# GoingPostal::Address::GoogleApi
+# GoingPostal::Api::Google
 # ===============================================================================
 # 
 #   This module relies on Google Maps API, version 3
@@ -21,8 +21,8 @@ require 'rack'
 # ===============================================================================
 
 module GoingPostal
-  class Address
-    module GoogleApi
+  class Api
+    module Google
       
       
       

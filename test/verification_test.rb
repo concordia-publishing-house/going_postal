@@ -20,4 +20,14 @@ class VerificationTest < ActiveSupport::TestCase
   
   
   
+  def test_verifying_via_usps_without_credentials
+    Address::Verification.api = :usps
+    assert_raises Api::Usps::CredentialsNotSupplied do
+      sloppy_address = Address.new(:street => '1234 Fake St', :city => 'Nowhere', :state => 'AA', :zip => '')
+      sloppy_address.suggest_valid_address
+    end
+  end
+  
+  
+  
 end
