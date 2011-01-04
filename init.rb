@@ -1,1 +1,2 @@
-ActiveRecord::Base.extend(MakeAddress)
+require 'going_postal'
+ActiveRecord::Base.extend(GoingPostal::MakeAddress)

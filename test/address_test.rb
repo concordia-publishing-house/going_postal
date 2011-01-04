@@ -1,21 +1,27 @@
 require "test_helper"
 
 class AddressTest < ActiveSupport::TestCase
+  include GoingPostal
+  
+  
   
   def test_address_to_yaml
-    a = Address.new({'street' => '555 Main', 'city' => 'Average', 'state' => 'MO', 'zip' => '55555'})
-    b = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
-    assert_equal a.to_yaml, b.to_yaml
-    
     a = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
-    b = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
+    expected_yaml = "--- \n:zip: \"55555\"\n:street: 555 Main\n:city: Average\n:state: MO\n"
+    assert_equal expected_yaml, a.to_yaml
+    
+    b = Address.new({'street' => '555 Main', 'city' => 'Average', 'state' => 'MO', 'zip' => '55555'})
     assert_equal a.to_yaml, b.to_yaml
   end
+  
+  
   
   def test_valid_address
     address = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
     assert address.valid?
   end
+  
+  
   
   def test_invalid_addresses
     address = Address.new
@@ -35,6 +41,8 @@ class AddressTest < ActiveSupport::TestCase
     assert address.errors[:zip].any?
   end
   
+  
+  
   def test_address_comparison
     a = Address.new({:street => "555 main", :city => "Average", :state => "MO", :zip => "55555"})
     b = Address.new({:street => "555 main", :city => "Average", :state => "MO", :zip => "55555"})
@@ -50,9 +58,13 @@ class AddressTest < ActiveSupport::TestCase
     assert_not_equal a, b
   end
   
+  
+  
   def test_address_to_s
     address = Address.new(:street => '555 Example', :city => "Example", :state => "MO", :zip => "55555")
     assert_equal "555 Example\nExample, MO  55555", address.to_s
   end
+  
+  
   
 end
