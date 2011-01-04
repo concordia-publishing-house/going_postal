@@ -3,14 +3,14 @@ require 'active_model/validations'
 require 'active_support'
 require 'active_support/core_ext'
 require 'going_postal/address/geocoding'
-# require 'going_postal/address/verification'
+require 'going_postal/address/verification'
 
 
 module GoingPostal
   class Address
     include ActiveModel::Validations
     include Geocoding
-    # include Verification
+    include Verification
     
     
     
