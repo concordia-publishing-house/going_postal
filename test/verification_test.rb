@@ -13,4 +13,11 @@ class VerificationTest < ActiveSupport::TestCase
   
   
   
+  def test_verification_of_missing_address
+    sloppy_address = Address.new(:street => '1234 Fake St', :city => 'Nowhere', :state => 'AA', :zip => '')
+    assert_equal Address.empty, sloppy_address.suggest_valid_address
+  end
+  
+  
+  
 end
