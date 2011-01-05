@@ -1,5 +1,5 @@
-require 'net/http'
-require 'rack'
+require 'rubygems'
+require 'awesome_usps'
 
 
 # ===============================================================================
@@ -15,11 +15,15 @@ module GoingPostal
       
       
       
-      mattr_accessor :credentials
+      mattr_accessor :user_id
+      mattr_accessor :server
       
       
       
       class CredentialsNotSupplied < StandardError
+      end
+      
+      class ServerNotSupplied < StandardError
       end
       
       class AddressNotFound < StandardError
@@ -27,44 +31,17 @@ module GoingPostal
       
       
       
-      class Result
-        
-        def initialize(json)
-          @json = json
-          @address_components = @json['address_components']
-          @geometry = @json['geometry']
-        end
-        
-        attr_reader :address_components, :geometry, :json
-        
-        def latitude
-          geometry['location']['lat']
-        end
-        
-        def longitude
-          geometry['location']['lng']
-        end
-        
-        def get_address_component(part, variation=:long)
-          part = part.to_s
-          component = address_components.find {|hash| hash['types'].include?(part)}
-          component ? component["#{variation}_name"] : nil
-        end
-        
-      end
-      
-      
-      
       def self.find_address!(address)
-        results = find_address(address)
-        raise(AddressNotFound) if results.empty?
-        results
+        find_address(address) || raise(AddressNotFound)
       end
       
       def self.find_address(address)
-        escaped_address = Rack::Utils.escape(address.to_s)
-        json = make_request(escaped_address)
-        (json['results'] || []).map {|json| Result.new(json)}
+        find_addresses(address).first
+      end
+      
+      def self.find_addresses(address)
+        results = make_request(address.to_hash)
+        results.map {|hash| usps_hash_to_address(hash)}
       end
       
       
@@ -73,11 +50,37 @@ module GoingPostal
       
       
       
-      def self.make_request(escaped_address)
-        raise CredentialsNotSupplied if ::GoingPostal::Api::Usps.credentials.nil?
-        uri = URI.parse("http://maps.googleapis.com/maps/api/geocode/json?address=#{escaped_address}&sensor=false")
-        response = Net::HTTP.get_response(uri)
-        ActiveSupport::JSON.decode(response.body)
+      def self.make_request(address_hash)
+        user_id = ::GoingPostal::Api::Usps.user_id || raise(CredentialsNotSupplied)
+        server  = ::GoingPostal::Api::Usps.server  || raise(ServerNotSupplied)
+        
+        api = AwesomeUsps::Api.new(:username => user_id, :server => server)
+        api.verify_address(address_hash)
+      end
+      
+      
+      
+      def self.usps_hash_to_address(hash)
+        Address.new({
+          :street => format_street(hash[:address1], hash[:address2]),
+          :city => hash[:city],
+          :state => hash[:state],
+          :zip => format_zip(hash[:zip5], hash[:zip4])
+        })
+      end
+      
+      def self.format_street(address1, address2)
+        if address1.blank?;     address2
+        elsif address2.blank?;  address1
+        else                    "#{address1}\n#{address2}"
+        end
+      end
+      
+      def self.format_zip(zip5, zip4)
+        if zip5.blank?;         ""
+        elsif zip4.blank?;      zip5
+        else                    "#{zip5}-#{zip4}"
+        end
       end
       
       

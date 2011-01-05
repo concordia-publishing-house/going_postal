@@ -31,12 +31,51 @@ module GoingPostal
       
       
       
+      def self.find_address!(address)
+        find_address(address) || raise(AddressNotFound)
+      end
+      
+      def self.find_address(address)
+        find_addresses(address).first
+      end
+      
+      def self.find_addresses(address)
+        escaped_address = Rack::Utils.escape(address.to_s)
+        json = make_request(escaped_address)
+        (json['results'] || []).map {|json| Result.new(json).to_address}
+      end
+      
+      
+      
+    private
+      
+      
+      
+      def self.make_request(escaped_address)
+        uri = URI.parse("http://maps.googleapis.com/maps/api/geocode/json?address=#{escaped_address}&sensor=false")
+        response = Net::HTTP.get_response(uri)
+        ActiveSupport::JSON.decode(response.body)
+      end
+      
+      
+      
       class Result
         
         def initialize(json)
           @json = json
           @address_components = @json['address_components']
           @geometry = @json['geometry']
+        end
+        
+        def to_address
+          Address.new({
+            :street => "#{get_address_component(:street_number)} #{get_address_component(:route)}",
+            :city => get_address_component(:locality),
+            :state => get_address_component(:administrative_area_level_1, :short),
+            :zip => get_address_component(:postal_code),
+            :latitude => latitude,
+            :longitude => longitude
+          })          
         end
         
         attr_reader :address_components, :geometry, :json
@@ -55,32 +94,6 @@ module GoingPostal
           component ? component["#{variation}_name"] : nil
         end
         
-      end
-      
-      
-      
-      def self.find_address!(address)
-        results = find_address(address)
-        raise(AddressNotFound) if results.empty?
-        results
-      end
-      
-      def self.find_address(address)
-        escaped_address = Rack::Utils.escape(address.to_s)
-        json = make_request(escaped_address)
-        (json['results'] || []).map {|json| Result.new(json)}
-      end
-      
-      
-      
-    private
-      
-      
-      
-      def self.make_request(escaped_address)
-        uri = URI.parse("http://maps.googleapis.com/maps/api/geocode/json?address=#{escaped_address}&sensor=false")
-        response = Net::HTTP.get_response(uri)
-        ActiveSupport::JSON.decode(response.body)
       end
       
       

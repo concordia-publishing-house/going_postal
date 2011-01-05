@@ -18,7 +18,7 @@ module GoingPostal
       
       def geocode!
         Rails.logger.info "[going_postal] geocoding '#{self.to_s}'" if defined?(Rails)
-        response = Api::Google.find_address(self).first
+        response = Api::Google.find_address(self)
         if response
           @latitude = response.latitude
           @longitude = response.longitude
