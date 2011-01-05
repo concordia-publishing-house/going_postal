@@ -11,6 +11,7 @@ module GoingPostal
     include ActiveModel::Validations
     include Geocoding
     include Verification
+    include ERB::Util
     
     
     
@@ -66,13 +67,7 @@ module GoingPostal
     
     
     def to_html
-      # todo 'h' is not recognized; but add html cleaning here
-      # address.blank? ? "" : h(address).gsub(/ /, "&nbsp;").gsub(/\n/, "<br />")
-      to_s.gsub(/ /, "&nbsp;").gsub(/\n/, "<br />")
-      # html = "#{street}"
-      # html << "<br/>" if(street and (street.length>0))
-      # html << "#{city}, #{state}&nbsp;&nbsp;#{zip}" if(city and (city.length>0))
-      # html
+      h(self.to_s).gsub(/ /, "&nbsp;").gsub(/\n/, "<br />").html_safe
     end
     
     
