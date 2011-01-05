@@ -13,6 +13,10 @@ module GoingPostal
       
       
       
+      def matches_authorized_version?
+        (self == suggest_valid_address)
+      end
+      
       # Lazy verification
       def suggest_valid_address
         @suggested_address ||= suggest_valid_address!
