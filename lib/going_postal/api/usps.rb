@@ -6,7 +6,19 @@ require 'awesome_usps'
 # GoingPostal::Api::Usps
 # ===============================================================================
 # 
-#
+#   This module relies on USPS Web Tools
+#   http://www.usps.com/webtools/
+#   
+#   In particular, it requires the use of the Address Information APIs
+#   You will need a username supplied by USPS and also permission to use
+#   the Address Information APIs to make use of the module.
+#   
+#   You can receive a username by registering here for a Web Tools account:
+#   https://secure.shippingapis.com/registration/
+#   
+#   You can request permission to use the Address Information APIs here:
+#   http://www.usps.com/webtools/webtoolsapirequestform.htm
+# 
 # ===============================================================================
 
 module GoingPostal
