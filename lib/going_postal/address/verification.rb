@@ -21,6 +21,7 @@ module GoingPostal
       def suggest_valid_address
         @suggested_address ||= suggest_valid_address!
       end
+      alias :suggested :suggest_valid_address
       
       def suggest_valid_address!
         Rails.logger.info "[going_postal] verifying '#{self.to_s}'" if defined?(Rails)
