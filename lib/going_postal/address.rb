@@ -61,7 +61,12 @@ module GoingPostal
     
     
     def as_json(options={})
-      to_html
+      {
+        :street => street,
+        :city => city,
+        :state => state,
+        :zip => zip
+      }
     end
     
     
