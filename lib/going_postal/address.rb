@@ -116,6 +116,9 @@ module GoingPostal
       [ "Alaska", "AK" ],
       [ "Arizona", "AZ" ],
       [ "Arkansas", "AR" ],
+      [ "Armed Forces Americas", "AA" ],
+      [ "Armed Forces Europe", "AE" ],
+      [ "Armed Forces Pacific", "AP" ],
       [ "California", "CA" ],
       [ "Colorado", "CO" ],
       [ "Connecticut", "CT" ],
@@ -171,6 +174,9 @@ module GoingPostal
       [ "AK" ],
       [ "AZ" ],
       [ "AR" ],
+      [ "AA" ], # Armed Forces (the) Americas
+      [ "AE" ], # Armed Forces Europe
+      [ "AP" ], # Armed Forces Pacific
       [ "CA" ],
       [ "CO" ],
       [ "CT" ],
