@@ -41,7 +41,7 @@ module GoingPostal
           send :alias_method, "composed_of_#{part_id}=".to_sym, "#{part_id}=".to_sym
           send :define_method, "#{part_id}=" do |address|
             address = address.is_a?(Hash) ? Address.new(address) : address
-            address.geocode if self.class.geocoding_enabled
+            address.geocode if address && self.class.geocoding_enabled
             send("composed_of_#{part_id}=", address)
           end
         end
