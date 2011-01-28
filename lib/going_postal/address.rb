@@ -37,8 +37,8 @@ module GoingPostal
     attr_reader :street, :city, :state, :zip
     
     def attributes=(hash)
-      hash = hash.symbolize_keys.reverse_merge(self.class.empty)
-      @street, @city, @state, @zip = hash[:street], hash[:city], hash[:state], hash[:zip]
+      hash = hash.symbolize_keys
+      @street, @city, @state, @zip = (hash[:street]||""), (hash[:city]||""), (hash[:state]||""), (hash[:zip]||"")
       @latitude, @longitude = hash[:latitude], hash[:longitude]
     end
     
@@ -78,12 +78,7 @@ module GoingPostal
     
     
     def self.empty
-      {
-        :street => "",
-        :city => "",
-        :state => "",
-        :zip => ""
-      }
+      Address.new
     end
     
     def to_hash
