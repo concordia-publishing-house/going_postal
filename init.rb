@@ -1,1 +1,3 @@
-ActiveRecord::Base.extend(MakeAddress)
+# ActiveRecord::Base.extend(MakeAddress)
+require 'address'
+require 'make_address'

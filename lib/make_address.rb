@@ -1,3 +1,5 @@
+require 'address'
+
 module MakeAddress
   
   def make_address(*parts)
