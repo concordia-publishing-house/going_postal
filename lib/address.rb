@@ -4,7 +4,7 @@ require 'hash_accessors'
 class Address < ActiveModel::Base
   include HashAccessors
   attr_reader :hash
-  hash_readers_for :hash, [:street, :city, :state, :zip]
+  hash_readers_for :hash, [:street, :city, :state, :zip, :country]
   
   STATES = [
     [ "Alabama", "AL" ],
@@ -239,7 +239,7 @@ protected
     errors.add(:city, "cannot be blank") if city.blank?
     errors.add(:state, "cannot be blank") if state.blank?
     errors.add(:zip, "cannot be blank") if zip.blank?
-    errors.add(:zip, "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em>).") if !zip.to_s.blank? and !zip.to_s.match(/\A\d{5}(-\d{4})?\Z/)
+    # errors.add(:zip, "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em>).") if !zip.to_s.blank? and !zip.to_s.match(/\A\d{5}(-\d{4})?\Z/)
     #errors.add(:state, "should be a 2-letter abbreviation." ) unless ( (:state =~ /\A[\w]{2}\Z/ ) or state.length==0 )  #user will choose from select field
   end
   
