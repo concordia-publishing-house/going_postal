@@ -19,7 +19,7 @@ module GoingPostal
     validates :street, :presence => true
     validates :city, :presence => true
     validates :state, :presence => true
-    validates :zip, :presence => true, :format => {:with => /\A\d{5}(-\d{4})?\Z/, :message => "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em>)."}
+    validates :zip, :presence => true #, :format => {:with => /\A\d{5}([-\s]?\d{4})?([-\s]?\d{2})?\Z/, :message => "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em> or <em>xxxxx-xxxx xx</em>)."}
     
     
     
