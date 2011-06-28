@@ -19,13 +19,12 @@ module GoingPostal
     validates :street, :presence => true
     validates :city, :presence => true
     validates :state, :presence => true
-    validates :zip, :presence => true #, :format => {:with => /\A\d{5}([-\s]?\d{4})?([-\s]?\d{2})?\Z/, :message => "is the wrong format (<em>xxxxx</em> or <em>xxxxx-xxxx</em> or <em>xxxxx-xxxx xx</em>)."}
+    validates :zip, :presence => true
     
     
     
     def initialize(*args)
       self.errors # !nb: c.f. http://boblail.tumblr.com/post/2528265548/using-validates-associated-with-composed-of-and
-      # @latlong = {:latitude => nil, :longitude => nil} # hack in similar vein to above: to get around freeze
       self.attributes = args.extract_options!
     end
     
@@ -34,22 +33,27 @@ module GoingPostal
     
     
     
-    attr_reader :street, :city, :state, :zip
+    attr_reader :street, :city, :state, :zip, :country
     
     def attributes=(hash)
-      hash = hash.symbolize_keys
-      @street, @city, @state, @zip = (hash[:street]||""), (hash[:city]||""), (hash[:state]||""), (hash[:zip]||"")
-      @latitude, @longitude = hash[:latitude], hash[:longitude]
+      hash        = hash.symbolize_keys
+      @street     = hash[:street] || ""
+      @city       = hash[:city]   || ""
+      @state      = hash[:state]  || ""
+      @zip        = hash[:zip]    || ""
+      @latitude   = hash[:latitude]
+      @longitude  = hash[:longitude]
     end
     
     
     
     def ==(other)
       other.is_a?(Address) &&
-      (self.street == other.street) &&
-      (self.city == other.city) &&
-      (self.state == other.state) &&
-      (self.zip == other.zip)
+      (self.street  == other.street) &&
+      (self.city    == other.city) &&
+      (self.state   == other.state) &&
+      (self.zip     == other.zip) &&
+      (self.country == other.country)
     end
     
     
@@ -62,10 +66,11 @@ module GoingPostal
     
     def as_json(options={})
       {
-        :street => street,
-        :city => city,
-        :state => state,
-        :zip => zip
+        :street   => street,
+        :city     => city,
+        :state    => state,
+        :zip      => zip,
+        :country  => country
       }
     end
     
@@ -83,10 +88,11 @@ module GoingPostal
     
     def to_hash
       {
-        :street => street,
-        :city => city,
-        :state => state,
-        :zip => zip
+        :street   => street,
+        :city     => city,
+        :state    => state,
+        :zip      => zip,
+        :country  => country
       }
     end
     
