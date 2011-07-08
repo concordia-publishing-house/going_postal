@@ -41,6 +41,7 @@ module GoingPostal
       @city       = hash[:city]   || ""
       @state      = hash[:state]  || ""
       @zip        = hash[:zip]    || ""
+      @country    = hash[:country]|| ""
       @latitude   = hash[:latitude]
       @longitude  = hash[:longitude]
     end
