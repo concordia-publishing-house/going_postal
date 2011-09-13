@@ -29,7 +29,7 @@ module GoingPostal
             if address_yaml.is_a?(Hash)
               Address.new(address_yaml.merge(:latitude => lat, :longitude => long))
             else
-              Rails.logger.info("[going_postal] can't make address from #{address_yaml.class}") if defined?(Rails)
+              Rails.logger.info("[going_postal] can't make address from #{address_yaml.class}") if defined?(Rails) && Rails.logger
               Address.new
             end
           },
