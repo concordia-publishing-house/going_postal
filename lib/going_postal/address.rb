@@ -4,6 +4,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'going_postal/address/geocoding'
 require 'going_postal/address/verification'
+require 'going_postal/address/parsing'
 
 
 module GoingPostal
@@ -11,6 +12,7 @@ module GoingPostal
     include ActiveModel::Validations
     include Geocoding
     include Verification
+    include Parsing
     include ERB::Util
     
     
