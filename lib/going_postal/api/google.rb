@@ -32,16 +32,17 @@ module GoingPostal
       
       
       
-      def self.find_address!(address)
-        find_address(address) || raise(AddressNotFound)
+      def self.find_address!(address_or_string)
+        find_address(address_or_string) || raise(AddressNotFound)
       end
       
-      def self.find_address(address)
-        find_addresses(address).first
+      def self.find_address(address_or_string)
+        find_addresses(address_or_string).first
       end
       
-      def self.find_addresses(address)
-        escaped_address = Rack::Utils.escape(address.to_s)
+      def self.find_addresses(address_or_string)
+        address_string = address_or_string.is_a?(String) ? address_or_string : address_or_string.to_s
+        escaped_address = Rack::Utils.escape(address_string)
         json = make_request(escaped_address)
         (json['results'] || []).map {|json| Result.new(json).to_address}
       end
