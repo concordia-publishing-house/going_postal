@@ -61,6 +61,7 @@ module GoingPostal
     
     
     
+    # according to USPS Publication 28, Postal Addressing Standards, use two spaces before zip
     def to_s
       street.blank? ? "" : "#{street}\n#{city}, #{state}  #{zip}"
     end
