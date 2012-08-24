@@ -33,6 +33,11 @@ module GoingPostal
     # !nb: c.f. http://boblail.tumblr.com/post/2528265548/using-validates-associated-with-composed-of-and
     def validation_context=(value); end
     
+    # !nb: in Rails 3.2, validates_associated asks this question
+    def marked_for_destruction?
+      false
+    end
+    
     
     
     attr_reader :street, :city, :state, :zip, :country
