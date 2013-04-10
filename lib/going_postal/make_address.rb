@@ -23,6 +23,7 @@ module GoingPostal
             end
             
             def #{part_id}=(address)
+              address = GoingPostal::Address.new(address) if address.is_a?(Hash)
               super(address.blank? ? nil : address.to_yaml)
               unless address.blank?
                 address.geocode if self.class.geocoding_enabled
@@ -42,6 +43,7 @@ module GoingPostal
             end
             
             def #{part_id}=(address)
+              address = GoingPostal::Address.new(address) if address.is_a?(Hash)
               super(address.blank? ? nil : address.to_yaml)
             end
           RUBY
