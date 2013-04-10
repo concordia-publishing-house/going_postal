@@ -7,8 +7,11 @@ class AddressTest < ActiveSupport::TestCase
   
   def test_address_to_yaml
     a = Address.new({:street => '555 Main', :city => 'Average', :state => 'MO', :zip => '55555'})
-    expected_yaml = "--- \n:zip: \"55555\"\n:street: 555 Main\n:city: Average\n:state: MO\n"
-    assert_equal expected_yaml, a.to_yaml
+    yaml = a.to_yaml
+    assert_match /:zip: '55555'/, yaml
+    assert_match /:street: 555 Main/, yaml
+    assert_match /:city: Average/, yaml
+    assert_match /:state: MO/, yaml
     
     b = Address.new({'street' => '555 Main', 'city' => 'Average', 'state' => 'MO', 'zip' => '55555'})
     assert_equal a.to_yaml, b.to_yaml

@@ -11,8 +11,8 @@ class ParsingTest < ActiveSupport::TestCase
   end
   
   
-  test "3558 S Jefferson Ave\nSt Louis, MO 63118",
-      {:street => "3558 S Jefferson Ave", :city => "St Louis", :state => "MO", :zip => "63118"}
+  test "3558 South Jefferson Avenue\nSt Louis, MO 63118",
+      {:street => "3558 South Jefferson Avenue", :city => "St. Louis", :state => "MO", :zip => "63118"}
   
   # test "Lewes-Georgetown Hwy, Georgetown, DE 19947",
   #      {:street => "Lewes-Georgetown Hwy", :city => "Georgetown", :state => "DE", :zip => "19947"}
