@@ -56,7 +56,9 @@ module GoingPostal
       def self.make_request(escaped_address)
         uri = URI.parse("http://maps.googleapis.com/maps/api/geocode/json?address=#{escaped_address}&sensor=false")
         response = Net::HTTP.get_response(uri)
-        ActiveSupport::JSON.decode(response.body)
+        # If Google's response is a bad one (not 200), we shouldn't throw and exception,
+        # instead behave as if there were no results returned.
+        response.code == "200" ? ActiveSupport::JSON.decode(response.body) : {"results"=>[], "status"=>"ZERO_RESULTS"}
       end
       
       
