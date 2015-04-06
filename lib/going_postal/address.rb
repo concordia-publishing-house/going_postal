@@ -79,7 +79,9 @@ module GoingPostal
         :city     => city,
         :state    => state,
         :zip      => zip,
-        :country  => country
+        :country  => country,
+        :latitude => latitude,
+        :longitude=> longitude
       }
     end
     
@@ -101,7 +103,9 @@ module GoingPostal
         :city     => city,
         :state    => state,
         :zip      => zip,
-        :country  => country
+        :country  => country,
+        :latitude => latitude,
+        :longitude=> longitude
       }
     end
     
